@@ -2,8 +2,11 @@ package com.example.cocktailer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -42,6 +45,17 @@ public class MainActivity extends AppCompatActivity {
         String[] spinnerItems = {"Alcoholic", "Non Alcoholic"};
         Spinner spinnerListCocktail= findViewById(R.id.spinnerCocktail);
         spinnerListCocktail.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, spinnerItems));
+
+        ListView listView = findViewById(R.id.listViewCocktail);
+        listView.setOnItemClickListener(((parent, view, position, id) -> clickOnListItem(parent, position, view)));
+    }
+
+    public void clickOnListItem(AdapterView<?> parent, int position, View view) {
+        Cocktail cocktail = (Cocktail)parent.getAdapter().getItem(position);
+
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("id", cocktail.getId());
+        startActivity(intent);
     }
 
     private void updateView(JSONObject response) {

@@ -21,18 +21,27 @@ public class Cocktail {
         this.img = img;
     }
 
-    public HashMap getIngredients() {
+    public String[] getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(HashMap ingredients) {
+    public void setIngredients(String[] ingredients) {
         this.ingredients = ingredients;
     }
 
     private String name;
     private boolean alcoholic;
     private String img;
-    private HashMap ingredients;
+    private String[] ingredients;
+    private String discribtion;
+
+    public String getDiscribtion() {
+        return discribtion;
+    }
+
+    public void setDiscribtion(String discribtion) {
+        this.discribtion = discribtion;
+    }
 
     public String getName() {
         return name;
