@@ -3,12 +3,12 @@ package com.example.cocktailer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +21,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -46,13 +44,28 @@ public class DetailActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> updateView(response),
+                response -> jsonToCocktail(response),
                 error -> Log.i("error", error.getMessage())
         );
         queue.add(jsonObjectRequest);
+
+
+
     }
 
-    private void updateView(JSONObject response) {
+    private void fillListViewIngredients(List<String> list) {
+        ListView listViewCocktail = findViewById(R.id.ListViewIngredients);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.simple_item_small, list);
+        listViewCocktail.setAdapter(arrayAdapter);
+    }
+
+    private void fillListViewQuantity(List<String> list) {
+        ListView listViewCocktail = findViewById(R.id.ListViewQuantity);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.simple_item_small, list);
+        listViewCocktail.setAdapter(arrayAdapter);
+    }
+
+    private void jsonToCocktail(JSONObject response) {
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray = response.getJSONArray("drinks");
@@ -67,6 +80,16 @@ public class DetailActivity extends AppCompatActivity {
                 cocktail.setName(jsonObject.getString("strDrink"));
                 cocktail.setDiscribtion(jsonObject.getString("strInstructions"));
                 cocktail.setImg(jsonObject.getString("strDrinkThumb"));
+                cocktail.setIngredients(new String[]{jsonObject.getString("strIngredient1"),
+                        jsonObject.getString("strIngredient2"),
+                        jsonObject.getString("strIngredient3"),
+                        jsonObject.getString("strIngredient4"),
+                        jsonObject.getString("strIngredient5")});
+                cocktail.setQuantitys(new String[]{jsonObject.getString("strMeasure1"),
+                        jsonObject.getString("strMeasure2"),
+                        jsonObject.getString("strMeasure3"),
+                        jsonObject.getString("strMeasure4"),
+                        jsonObject.getString("strMeasure5")});
             } catch (JSONException e) {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
             }
@@ -79,14 +102,10 @@ public class DetailActivity extends AppCompatActivity {
         describtion.setText(cocktail.getDiscribtion());
 
         ImageView imageView = findViewById(R.id.imageView);
-
-//        try {
-//            Bitmap bitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
-//            imageView.setImageBitmap(bitmap);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         Picasso.get().load(cocktail.getImg()).into(imageView);
+
+        fillListViewIngredients(Arrays.asList(cocktail.getIngredients()));
+        fillListViewQuantity(Arrays.asList(cocktail.getQuantitys()));
     }
 
     public void back(View view) {

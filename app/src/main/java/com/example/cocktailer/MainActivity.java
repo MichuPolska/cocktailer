@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -23,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,18 +31,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String url = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=alcoholic";
+        String[] spinnerItems = {"Alcoholic", "Non_Alcoholic"};
+        Spinner spinnerListCocktail= findViewById(R.id.spinnerCocktail);
+        spinnerListCocktail.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, spinnerItems));
+
+        String alcoholic = "alcoholic";
+        Intent intent = getIntent();
+        if (intent != null) {
+            alcoholic = intent.getStringExtra("alcoholic");
+        }
+        String url = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=" + alcoholic;
         RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> updateView(response),
+                response -> jsonToList(response),
                 error -> Log.i("error", error.getMessage())
         );
         queue.add(jsonArrayRequest);
-
-        String[] spinnerItems = {"Alcoholic", "Non Alcoholic"};
-        Spinner spinnerListCocktail= findViewById(R.id.spinnerCocktail);
-        spinnerListCocktail.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, spinnerItems));
 
         ListView listView = findViewById(R.id.listViewCocktail);
         listView.setOnItemClickListener(((parent, view, position, id) -> clickOnListItem(parent, position, view)));
@@ -58,7 +61,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void updateView(JSONObject response) {
+    public void clickOnShow(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        Spinner spinner = findViewById(R.id.spinnerCocktail);
+        intent.putExtra("alcoholic" ,(String) spinner.getSelectedItem());
+        startActivity(intent);
+    }
+
+    private void jsonToList(JSONObject response) {
         JSONArray jsonArray = new JSONArray();
         try {
             jsonArray = response.getJSONArray("drinks");
@@ -83,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         ListView listViewCocktail = findViewById(R.id.listViewCocktail);
         ArrayAdapter<Cocktail> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
         listViewCocktail.setAdapter(arrayAdapter);
-        Toast.makeText(this, "done", Toast.LENGTH_LONG).show();
     }
 
     private Cocktail jsonToCocktail(JSONObject jsonObject) {
@@ -98,5 +107,7 @@ public class MainActivity extends AppCompatActivity {
         return cocktail;
 
     }
+
+
 
 }

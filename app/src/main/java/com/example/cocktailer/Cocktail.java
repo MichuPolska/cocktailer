@@ -33,7 +33,16 @@ public class Cocktail {
     private boolean alcoholic;
     private String img;
     private String[] ingredients;
+    private String[] quantitys;
     private String discribtion;
+
+    public String[] getQuantitys() {
+        return quantitys;
+    }
+
+    public void setQuantitys(String[] quantitys) {
+        this.quantitys = quantitys;
+    }
 
     public String getDiscribtion() {
         return discribtion;
